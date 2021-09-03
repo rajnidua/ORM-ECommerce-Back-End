@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
           as: "products",
           required: false,
           // Pass in the Product attributes that you want to retrieve
-          attributes: ["id", "product_name"],
+          //attributes: ["id", "product_name"],
         },
       ],
     });
@@ -38,7 +38,7 @@ router.get("/:id", async (req, res) => {
           as: "products",
           required: false,
           // Pass in the Product attributes that you want to retrieve
-          attributes: ["id", "product_name"],
+          //attributes: ["id", "product_name"],
         },
       ],
     });
@@ -54,12 +54,38 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   // create a new category
+  try {
+    const categoryData = await Category.create(req.body);
+    res.status(200).json(categoryData);
+  } catch (err) {
+    res.status(400).json(err);
+  }
 });
 
 router.put("/:id", (req, res) => {
   // update a category by its `id` value
+  //Calls the update method on the Category model
+  Category.update(
+    {
+      // All the fields you can update and the data attached to the request body.
+      category_name: req.body.category_name,
+    },
+    {
+      // Gets a book based on the book_id given in the request parameters
+      where: {
+        id: req.params.id,
+      },
+    }
+  )
+    .then((updatedCategory) => {
+      res.json(updatedCategory);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
 });
 
 router.delete("/:id", (req, res) => {
