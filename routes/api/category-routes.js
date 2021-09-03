@@ -73,7 +73,7 @@ router.put("/:id", (req, res) => {
       category_name: req.body.category_name,
     },
     {
-      // Gets a book based on the book_id given in the request parameters
+      // Gets a category based on the id given in the request parameters
       where: {
         id: req.params.id,
       },
@@ -90,6 +90,17 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
   // delete a category by its `id` value
+  // Looks for the categories based id given in the request parameters
+  Category.destroy({
+    where: {
+      id: req.params.id,
+      //Product.category_id :req.params.id
+    },
+  })
+    .then((deletedCategory) => {
+      res.json(deletedCategory);
+    })
+    .catch((err) => res.json(err));
 });
 
 module.exports = router;
