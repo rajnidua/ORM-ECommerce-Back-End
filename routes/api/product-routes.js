@@ -31,9 +31,39 @@ router.get("/", async (req, res) => {
 });
 
 // get one product
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
+
+  try {
+    const singleProduct = await Product.findByPk(req.params.id, {
+      // JOIN with locations, using the Trip through table
+      include: [
+        {
+          model: Tag,
+          as: "tags",
+          required: false,
+          // Pass in the Product attributes that you want to retrieve
+          attributes: ["id", "tag_name"],
+          through: {
+            // This block of code allows you to retrieve the properties of the join table
+            model: ProductTag,
+            as: "product_tags",
+            attributes: ["id", "product_id", "tag_id"],
+          },
+        },
+      ],
+    });
+
+    if (!singleProduct) {
+      res.status(404).json({ message: "No product found with this id!" });
+      return;
+    }
+
+    res.status(200).json(singleProduct);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 // create new product
