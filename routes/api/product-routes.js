@@ -1,22 +1,43 @@
-const router = require('express').Router();
-const { Product, Category, Tag, ProductTag } = require('../../models');
+const router = require("express").Router();
+const { Product, Category, Tag, ProductTag } = require("../../models");
 
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
-  // find all products
-  // be sure to include its associated Category and Tag data
+router.get("/", async (req, res) => {
+  try {
+    const allProducts = await Product.findAll({
+      // Make sure to include the products
+      include: [
+        {
+          model: Tag,
+          as: "tags",
+          required: false,
+          // Pass in the Product attributes that you want to retrieve
+          attributes: ["id", "tag_name"],
+          through: {
+            // This block of code allows you to retrieve the properties of the join table
+            model: ProductTag,
+            as: "product_tags",
+            attributes: ["id", "product_id", "tag_id"],
+          },
+        },
+      ],
+    });
+    return res.status(200).json(allProducts);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 // get one product
-router.get('/:id', (req, res) => {
+router.get("/:id", (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
 });
 
 // create new product
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -48,7 +69,7 @@ router.post('/', (req, res) => {
 });
 
 // update product
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   // update product data
   Product.update(req.body, {
     where: {
@@ -89,7 +110,7 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete("/:id", (req, res) => {
   // delete one product by its `id` value
 });
 
