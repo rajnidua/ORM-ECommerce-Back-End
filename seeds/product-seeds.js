@@ -31,12 +31,6 @@ const productData = [
     stock: 22,
     category_id: 2,
   },
-  {
-    product_name: "Cycling Shorts",
-    price: 34.99,
-    stock: 15,
-    category_id: 2,
-  },
 ];
 
 const seedProducts = () => Product.bulkCreate(productData);
